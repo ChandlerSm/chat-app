@@ -1,0 +1,28 @@
+.landing-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+    height: 100vh;
+    background-color: #73a9ff;
+    color: white;
+}
+
+#chat-names-holder, #chat-holder {
+    background-color: #315b9e;
+    height: 98%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: solid 1px #092c63;
+    text-align: center;
+    border-radius: 5px;
+}
+
+#chat-names-holder {
+    width: 23%;
+}
+
+#chat-holder {
+    width: 75%;
+}
