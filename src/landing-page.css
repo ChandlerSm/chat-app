@@ -17,6 +17,7 @@
     border: solid 1px #092c63;
     text-align: center;
     border-radius: 5px;
+    align-items: center;
 }
 
 #chat-names-holder {
@@ -24,5 +25,42 @@
 }
 
 #chat-holder {
+    display: flex;
     width: 75%;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    justify-content: flex-end;
+}
+
+.user-messages {
+    border: solid 1px;
+    width: 25%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #85b4ff;
+
+}
+
+#your-messages {
+    justify-content: right;
+    align-items: right;
+    display: flex;
+}
+
+#other-person-message {
+    justify-content: left;
+    align-items: left;
+    display: flex;
+}
+
+#message-box {
+    border: solid 1px;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+    border: solid 2px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.788);
 }
