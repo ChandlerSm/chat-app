@@ -5,13 +5,13 @@
     width: 100%;
     gap: 5px;
     height: 100vh;
-    background-color: #73a9ff;
+    background-color: #000000;
     color: white;
 }
 
 #chat-names-holder, #chat-holder {
-    background-color: #315b9e;
-    height: 98%;
+    background-color: #27282b;
+    height: 99%;
     margin-top: 5px;
     margin-bottom: 5px;
     border: solid 1px #092c63;
@@ -25,13 +25,15 @@
 }
 
 #chat-holder {
-    display: flex;
     width: 75%;
+    box-sizing: border-box;
+    display: flex;
     flex-direction: column;
     gap: 5px;
     padding-left: 10px;
     padding-right: 10px;
-    justify-content: flex-end;
+    overflow-x: hidden;
+    padding-bottom: 50px;
 }
 
 .user-messages {
@@ -39,28 +41,30 @@
     width: 25%;
     padding: 10px;
     border-radius: 10px;
-    background-color: #85b4ff;
+    background-color: #3f629b;
 
 }
 
-#your-messages {
+.your-messages {
     justify-content: right;
     align-items: right;
     display: flex;
 }
 
-#other-person-message {
+.other-person-message {
     justify-content: left;
     align-items: left;
     display: flex;
 }
 
 #message-box {
+    position: fixed;
+    bottom: 0;
     border: solid 1px;
-    width: 100%;
+    width: 50%;
     height: 40px;
-    margin-bottom: 10px;
-    border: solid 2px;
+    margin-bottom: 15px;
+    border: solid 1px;
     border-radius: 20px;
     background-color: rgba(255, 255, 255, 0.788);
 }
