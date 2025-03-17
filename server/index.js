@@ -15,14 +15,20 @@ const io = socketIo(server, {
 io.on('connection', (socket) => {
     console.log("A user has connected.");
 
+
+    let username = "";
     socket.on('message', (data) => {
         console.log("Got message", data);
         // Emit the message to all connected clients
+        username = data.name;
         io.emit('message', { username: data.name, final_message: data.message });
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (data) => {
         console.log("A user has disconnected.");
+        if (username) {
+          io.emit('message', { username: data.name, final_message: username + " has disconnected." });
+        }
     });
 });
 

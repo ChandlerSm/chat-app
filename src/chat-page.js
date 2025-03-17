@@ -16,12 +16,12 @@ const ChatPage = () => {
         // Initialize the socket connection
         socket.current = io("http://localhost:3000");
 
-        // socket.current.on('message', (data) => {
-        //   setAllMessages((prevMessages) => [
-        //     ...prevMessages,
-        //     { name: data.username, message: data.final_message }
-        //   ]);
-        // });
+        socket.current.on('message', (data) => {
+          setAllMessages((prevMessages) => [
+            ...prevMessages,
+            { name: data.username, message: data.final_message }
+          ]);
+        });
 
         return () => {
         socket.current.disconnect(); // Cleanup on unmount
@@ -37,11 +37,8 @@ const ChatPage = () => {
         console.log(final_message);
         // Use the same socket instance to emit the message
         socket.current.emit('message', { name: username, message: final_message });
-        setAllMessages((prevMessages) => [
-            ...prevMessages,
-            { name: username, message: final_message }
-        ]);
         setFinal_message(""); // Clear the input field
+        console.log(all_messages)
         dummy.current.scrollIntoView({ behavior: "smooth" });
         }
     };
@@ -54,11 +51,11 @@ const ChatPage = () => {
       <div id="chat-holder">
         {all_messages.map((msg, index) => (
           msg.name !== username ? (
-            <div key={`${msg.name}-${msg.message}`} className="other-person-message" style={{ width: "100%" }}>
+            <div key={`${msg.name}-${msg.message}-${index}`} className="other-person-message" style={{ width: "100%" }}>
               <p className="user-messages">{msg.message}</p>
             </div>
           ) : (
-            <div key={`${msg.name}-${msg.message}`} className="your-messages" style={{ width: "100%" }}>
+            <div key={`${msg.name}-${msg.message}-${index}`} className="your-messages" style={{ width: "100%" }}>
               <p className="user-messages">{msg.message}</p>
             </div>
           )
