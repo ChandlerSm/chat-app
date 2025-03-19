@@ -14,7 +14,7 @@ const SignIn = () => {
     return (
         <div id="sign-in-holder" style={{width: "90%"}}>
                 <input
-                    id="message-box"
+                    id="sign-in-box"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
