@@ -1,0 +1,58 @@
+:root {
+    --bg-color: #202c34;
+    --bordering-color: #455f70;
+  }
+
+#sign-in-holder, #inner-holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#sign-in-holder {
+    background-color: rgb(50, 67, 78);
+    height: 100vh;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#inner-holder {
+    border: solid 1px var(--bordering-color);
+    border-radius: 10px;
+    flex-direction: column;
+    width: 50%;
+    height: 75%;
+    gap: 50px;
+    background-color: var(--bg-color);
+    color: #8dbcdb;
+    font-size: 10px;
+}
+
+#sign-in-box {
+    width: 80%;
+    height: 50px;
+    border-radius: 50px;
+    padding: 10px;
+    background-color: #141a1f;
+    border: solid 1px var(--bordering-color);
+    color: white;
+}
+
+#sign-in-box:focus {
+    border-color: #749db9;
+    outline: none;
+}
+
+#signin-button {
+    width: 25%;
+    padding: 10px;
+    border-radius: 30px;
+    background-color: #141a1f;
+    color: white;
+    border: none;
+    color: #8dbcdb;
+}
+
+#signin-button:hover {
+    border: solid 1px var(--bordering-color);
+}
