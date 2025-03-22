@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./sign-in.css";
 
 const SignIn = () => {
     const navigate = useNavigate()
@@ -11,15 +12,25 @@ const SignIn = () => {
         }
     }
 
+    const handle_keySignin = (e) => {
+        if (e.key === "Enter") {
+            handleSignin(e.target.value)
+        }
+    }
+
     return (
-        <div id="sign-in-holder" style={{width: "90%"}}>
+        <div id="sign-in-holder" style={{width: "100%"}}>
+            <div id="inner-holder">
+                <h1>Input Username</h1>
                 <input
-                    id="message-box"
+                    id="sign-in-box"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handle_keySignin}
                 />
-                <button onClick={handleSignin} />
+                <button id="signin-button" onClick={handleSignin}> Login </button>
+                </div>
         </div>
     )
 }

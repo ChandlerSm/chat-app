@@ -10,7 +10,7 @@ const ChatPage = () => {
     const socket = useRef(null); // To store the socket instance
     const location = useLocation();
     const {username} = location.state ||  {username: "Unknown"};
-    
+    const prev_message = all_messages[all_messages.length - 1];
 
     useEffect(() => {
         // Initialize the socket connection
@@ -46,29 +46,48 @@ const ChatPage = () => {
   return (
     <div className="landing-page">
       <div id="chat-names-holder">
-        <p>{username}</p>
+        <div className="left-names-holder">
+          <p>place holder</p>
+          {all_messages.length > 0 && all_messages[all_messages.length - 1].name === username ? (
+            <p className="last-message">
+              {"You: " + (prev_message ? prev_message.message : "")}
+            </p>
+          ) : (
+            <p className="last-message">
+              {all_messages.length > 0
+                ? `${all_messages[all_messages.length - 1]?.name}: ${prev_message ? prev_message.message : ""}`
+                : "No message yet"
+              }
+            </p>
+          )}
+        </div>
       </div>
+      <div id="right-box">
+      <div id="recipient-name">
+          {username}
+        </div>
       <div id="chat-holder">
         {all_messages.map((msg, index) => (
           msg.name !== username ? (
             <div key={`${msg.name}-${msg.message}-${index}`} className="other-person-message" style={{ width: "100%" }}>
-              <p className="user-messages">{msg.message}</p>
+              <p className="other-user-message">{msg.message}</p>
             </div>
           ) : (
             <div key={`${msg.name}-${msg.message}-${index}`} className="your-messages" style={{ width: "100%" }}>
-              <p className="user-messages">{msg.message}</p>
+              <p className="user-message">{msg.message}</p>
             </div>
           )
         ))}
         <div ref={dummy} />
-        <input
+      </div>
+      <input
           id="message-box"
           type="text"
           value={final_message}
           onChange={(e) => message_input(e.target.value)}
           onKeyDown={handleKeydown}
         />
-      </div>
+        </div>
     </div>
   );
 };

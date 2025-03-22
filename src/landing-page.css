@@ -3,46 +3,48 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    gap: 5px;
     height: 100vh;
     background-color: #000000;
     color: white;
+    overflow-y: hidden;
 }
 
 #chat-names-holder, #chat-holder {
-    background-color: #27282b;
-    height: 99%;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border: solid 1px #092c63;
-    text-align: center;
-    border-radius: 5px;
-    align-items: center;
+    background-color: #202c34;
+    height: 100%;
+    /* text-align: center;
+    align-items: center; */
+}
+
+#chat-holder, #message-box, #recipient-name {
+    border: solid 0.5px #455f70;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 #chat-names-holder {
+    border: solid 0.5px #455f70;
+    border-right: none;
     width: 23%;
+    height: 99.8%;
 }
 
 #chat-holder {
-    width: 75%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
     overflow-x: hidden;
-    padding-bottom: 50px;
 }
 
-.user-messages {
-    border: solid 1px;
-    width: 25%;
+.user-message, .other-user-message {
+    width: auto;
     padding: 10px;
     border-radius: 10px;
     background-color: #3f629b;
+}
 
+.other-user-message {
+    background-color: rgb(57, 86, 95) !important;
 }
 
 .your-messages {
@@ -57,14 +59,32 @@
     display: flex;
 }
 
+.left-names-holder {
+    border-top: solid 0.5px #455f70;
+    border-bottom: solid 0.5px #455f70;
+    padding: 3px;
+}
+
+.last-message {
+    color: rgba(255, 255, 255, 0.507);
+}
+
 #message-box {
-    position: fixed;
-    bottom: 0;
-    border: solid 1px;
-    width: 50%;
     height: 40px;
-    margin-bottom: 15px;
-    border: solid 1px;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.788);
+    background-color: #202c34;
+    color: rgba(173, 178, 206, 0.788);
+    border-top: none;
+}
+
+#right-box {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    height: 100%;
+}
+
+#recipient-name {
+    background-color: #202c34;
+    border-bottom: none;
+    height: 50px;
 }
