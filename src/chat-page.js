@@ -14,6 +14,9 @@ const ChatPage = () => {
 
     useEffect(() => {
         // Initialize the socket connection
+        fetch("http://localhost:3000/chats?user=" + username).then(res => res.json())
+        .then(data => console.log(data));
+
         socket.current = io("http://localhost:3000");
 
         socket.current.on('message', (data) => {

@@ -1,10 +1,16 @@
+const { rejects } = require("assert");
 const e = require("express");
 const express = require("express");
 const http = require('http');
+const { resolve } = require("path");
 const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
+
+const cors = require("cors");
+app.use(cors());
+
 
 // Used to connect the websockets
 const io = socketIo(server, {
@@ -16,7 +22,6 @@ const io = socketIo(server, {
 
 io.on('connection', (socket) => {
     console.log("A user has connected.");
-
 
     let username = "";
     socket.on('message', (data) => {
@@ -60,15 +65,47 @@ db.all("SELECT * FROM message", (err, rows) => {
 
 // Return a list of all chats, mainly for testing
 const getAllChats = () => {
-  db.all("SELECT * FROM chat", (err, rows) => {
-    if (err) {
-      console.log("Could not query chat")
-    }
-    else {
-      console.log("All chats:", rows);
-    }
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM chat", (err, rows) => {
+      if (err) {
+        console.log("Could not query chat");
+        reject(err);
+      }
+      else {
+        console.log("All chats:", rows);
+        resolve(rows);
+      }
+    });
   });
 }
+
+// Place holder username for testing, should pull from frontend to get username
+// const username = "Alice";
+
+// Pulls from db to get all the current users chats
+const getUserChats = (username) => {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * FROM chat_participants WHERE name = ?`, [username], (err, participants) => {
+      if (err) return reject(err);
+
+      // Extract chat IDs
+      const chatIds = participants.map(p => p.chat_id);
+
+      if (chatIds.length === 0) {
+        return resolve([]); // User is not in any chats
+      }
+
+      // Query each chat by ID
+      const placeholders = chatIds.map(() => '?').join(', ');
+      const query = `SELECT * FROM chat WHERE id IN (${placeholders})`;
+
+      db.all(query, chatIds, (err, chats) => {
+        if (err) return reject(err);
+        resolve(chats);
+      });
+    });
+  });
+};
 
 // Return a list of all partipents in each chat, mainly for testing
 const getAllParticipants = () => {
@@ -114,10 +151,25 @@ const addParticipants = (chat_id, name) => {
 
 
 createChat("test chat 3");
-addParticipants(2, ["Red", "Blue"]);
+createChat("Test chat 2");
+addParticipants(2, ["Red", "Blue", "Alice"]);
 getAllMessages();
 getAllChats();
 getAllParticipants();
+// console.log(getUserChats());
+
+// Will send json data of all the chats the user is in.
+app.get("/chats", async (req, res) => {
+  try {
+    const username = req.query.user;
+    const chat = await getUserChats(username);
+    res.json(chat);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" }); 
+  }
+});
 
 // Close the database
 // db.close((err) => {
