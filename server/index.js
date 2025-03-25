@@ -101,7 +101,39 @@ const getUserChats = (username) => {
 
       db.all(query, chatIds, (err, chats) => {
         if (err) return reject(err);
-        resolve(chats);
+        // resolve(chats);
+
+        // Get latest message of each chat
+        // Selects chat_id, name, message, timestamp of message table
+        // Joins together the values into latestMsg, with the highest timestamp to get the latest message
+        const lastMessageQuery = `SELECT m.chat_id, m.name, m.message, m.timestamp
+        FROM message m
+        INNER JOIN (
+          SELECT chat_id, MAX(timestamp) AS latest 
+          FROM message 
+          WHERE chat_id IN (${placeholders})
+          GROUP by chat_id
+        ) latestMsg
+         ON m.chat_id = latestMsg.chat_id AND m.timestamp = latestMsg.latest`;
+
+         db.all(lastMessageQuery, chatIds, (err, lastMessage) => {
+            if (err) reject(err);
+            const result = chats.map(chat => {
+              // Find the last message where the chat_id is equal to the message chat id
+              const lastMsg = lastMessage.find(msg => msg.chat_id === chat.id);
+              return {
+                ...chat,
+                lastMessage: lastMsg
+                ? {
+                  name: lastMsg.name,
+                  message: lastMsg.message,
+                  timestamp: lastMsg.timestamp
+              }
+              : null
+              }
+            })
+            resolve(result);
+         })
       });
     });
   });
