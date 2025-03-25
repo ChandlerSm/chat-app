@@ -11,9 +11,13 @@ const ChatPage = () => {
     const location = useLocation();
     const {username} = location.state ||  {username: "Unknown"};
     const prev_message = all_messages[all_messages.length - 1];
+    const [userChatList, setUserChatList] = useState([]);
 
     useEffect(() => {
         // Initialize the socket connection
+        fetch("http://localhost:3000/chats?user=" + username).then(res => res.json())
+        .then(data => {console.log(data); setUserChatList(data)});
+
         socket.current = io("http://localhost:3000");
 
         socket.current.on('message', (data) => {
@@ -46,21 +50,17 @@ const ChatPage = () => {
   return (
     <div className="landing-page">
       <div id="chat-names-holder">
-        <div className="left-names-holder">
-          <p>place holder</p>
-          {all_messages.length > 0 && all_messages[all_messages.length - 1].name === username ? (
-            <p className="last-message">
-              {"You: " + (prev_message ? prev_message.message : "")}
-            </p>
+        {userChatList.map((chat, index) => (
+          userChatList.length !== 0 ? (
+          <div className="left-names-holder">
+            <p>{chat.name}</p>
+            <p className="last-message">{chat.lastMessage ? `${chat.lastMessage.name}: ${chat.lastMessage.message}` 
+            : `No Message Yet`}</p>
+            </div>
           ) : (
-            <p className="last-message">
-              {all_messages.length > 0
-                ? `${all_messages[all_messages.length - 1]?.name}: ${prev_message ? prev_message.message : ""}`
-                : "No message yet"
-              }
-            </p>
-          )}
-        </div>
+            null
+          )
+        ))}
       </div>
       <div id="right-box">
       <div id="recipient-name">
