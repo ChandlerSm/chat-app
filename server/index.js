@@ -203,6 +203,21 @@ app.get("/chats", async (req, res) => {
   }
 });
 
+app.get("/chatMessages", async (req, res) => {
+  try {
+    const chat_id = req.query.chat_id;
+    db.all(`SELECT * FROM message WHERE chat_id = ?`, [chat_id], (err, rows) => {
+      if (err) { return err; }
+      console.log(rows);
+      res.json(rows); 
+    })
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({error: "Internal server error"});
+  }
+});
+
 // Close the database
 // db.close((err) => {
 //   if (err) {

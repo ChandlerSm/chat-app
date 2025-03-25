@@ -10,7 +10,6 @@ const ChatPage = () => {
     const socket = useRef(null); // To store the socket instance
     const location = useLocation();
     const {username} = location.state ||  {username: "Unknown"};
-    const prev_message = all_messages[all_messages.length - 1];
     const [userChatList, setUserChatList] = useState([]);
 
     useEffect(() => {
@@ -36,6 +35,17 @@ const ChatPage = () => {
         setFinal_message(message);
     };
 
+    // Will get all messages of a chat when clicked, should update to also return all participants
+    const getChatMessages = (chat_id) => {
+      setAllMessages([]);
+      console.log("Button clicked");
+      fetch("http://localhost:3000/chatMessages?chat_id=" + chat_id).then((res) => res.json())
+      .then(data => {console.log(data); setAllMessages(data)})
+      .catch ((err) => {
+        console.log(err);
+      });
+    }
+
     const handleKeydown = (e) => {
         if (e.key === "Enter") {
         console.log(final_message);
@@ -52,7 +62,8 @@ const ChatPage = () => {
       <div id="chat-names-holder">
         {userChatList.map((chat, index) => (
           userChatList.length !== 0 ? (
-          <div className="left-names-holder">
+          <div className="left-names-holder" onClick={() => getChatMessages(chat.id)}>
+            <button onClick={() => getChatMessages(chat.id)}></button>
             <p>{chat.name}</p>
             <p className="last-message">{chat.lastMessage ? `${chat.lastMessage.name}: ${chat.lastMessage.message}` 
             : `No Message Yet`}</p>
@@ -68,6 +79,7 @@ const ChatPage = () => {
         </div>
       <div id="chat-holder">
         {all_messages.map((msg, index) => (
+          all_messages != null ? (
           msg.name !== username ? (
             <div key={`${msg.name}-${msg.message}-${index}`} className="other-person-message" style={{ width: "100%" }}>
               <p className="other-user-message">{msg.message}</p>
@@ -77,6 +89,9 @@ const ChatPage = () => {
               <p className="user-message">{msg.message}</p>
             </div>
           )
+        ) : (
+          null
+        )
         ))}
         <div ref={dummy} />
       </div>
