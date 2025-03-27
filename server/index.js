@@ -10,6 +10,7 @@ const server = http.createServer(app);
 
 const cors = require("cors");
 app.use(cors());
+app.use(express.json());
 
 
 // Used to connect the websockets
@@ -217,6 +218,25 @@ app.get("/chatMessages", async (req, res) => {
     res.status(500).json({error: "Internal server error"});
   }
 });
+
+app.post('/sendMessage', async (req, res) => {
+  try {
+    const data = req.body;
+    console.log("Received message: ", data);
+    db.all(`INSERT INTO message (chat_id, name, message) VALUES (?, ?, ?)`, [data.chat_id, data.name, data.message],(err) => {
+      if (err) { return err; }
+      console.log("succesfully uploaded message");
+    })
+
+    res.json({
+      message: 'Data received successfully',
+      receivedData: data
+    });
+  }
+  catch (err) {
+    console.log("Couldn't upload message.");
+  }
+})
 
 // Close the database
 // db.close((err) => {

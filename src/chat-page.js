@@ -11,6 +11,8 @@ const ChatPage = () => {
     const location = useLocation();
     const {username} = location.state ||  {username: "Unknown"};
     const [userChatList, setUserChatList] = useState([]);
+    const [currentChatId, setCurrentChatId] = useState(0);
+    const [IschatOpen, setIsChatOpen] = useState(false);
 
     useEffect(() => {
         // Initialize the socket connection
@@ -37,6 +39,8 @@ const ChatPage = () => {
 
     // Will get all messages of a chat when clicked, should update to also return all participants
     const getChatMessages = (chat_id) => {
+      setCurrentChatId(chat_id);
+      setIsChatOpen(true);
       setAllMessages([]);
       console.log("Button clicked");
       fetch("http://localhost:3000/chatMessages?chat_id=" + chat_id).then((res) => res.json())
@@ -54,12 +58,22 @@ const ChatPage = () => {
         setFinal_message(""); // Clear the input field
         console.log(all_messages)
         dummy.current.scrollIntoView({ behavior: "smooth" });
+
+        fetch("http://localhost:3000/sendMessage", {method: "POST", headers: {'Content-Type': 'application/json'}, 
+          body: JSON.stringify({name: username, message: final_message, chat_id: currentChatId})
+        }).then(res => res.json())
+        .then(data => {
+          console.log("successfully uploaded message: ", data)
+        })
+        .catch (err => {
+          console.log("Error uploading message", err)
+        })
         }
     };
 
   return (
     <div className="landing-page">
-      <div id="chat-names-holder">
+      <div id="chat-names-holder" style={{borderRight: IschatOpen ? "none" : "solid 1px #455f70"}}>
         {userChatList.map((chat, index) => (
           userChatList.length !== 0 ? (
           <div className="left-names-holder" onClick={() => getChatMessages(chat.id)}>
@@ -73,11 +87,11 @@ const ChatPage = () => {
           )
         ))}
       </div>
-      <div id="right-box">
+      <div id="right-box" style={{ width: IschatOpen ? "75%" : "0%"}}>
       <div id="recipient-name">
-          {username}
+          <p style={{ display: IschatOpen ? "block" : "none" }}>{username}</p>
         </div>
-      <div id="chat-holder">
+      <div id="chat-holder" >
         {all_messages.map((msg, index) => (
           all_messages != null ? (
           msg.name !== username ? (
