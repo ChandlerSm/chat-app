@@ -16,8 +16,7 @@ const ChatPage = () => {
 
     useEffect(() => {
         // Initialize the socket connection
-        fetch("http://localhost:3000/chats?user=" + username).then(res => res.json())
-        .then(data => {console.log(data); setUserChatList(data)});
+        getChatList();
 
         socket.current = io("http://localhost:3000");
 
@@ -26,6 +25,7 @@ const ChatPage = () => {
             ...prevMessages,
             { name: data.username, message: data.final_message }
           ]);
+          getChatList();
         });
 
         return () => {
@@ -37,9 +37,14 @@ const ChatPage = () => {
         setFinal_message(message);
     };
 
+    const getChatList = () => {
+      fetch("http://localhost:3000/chats?user=" + username).then(res => res.json())
+      .then(data => {console.log("Chat list: ", data); setUserChatList(data)});
+    }
+
     // Will get all messages of a chat when clicked, should update to also return all participants
     const getChatMessages = (chat_id) => {
-      setCurrentChatId(chat_id);
+      setCurrentChatId(chat_id-1);
       setIsChatOpen(true);
       setAllMessages([]);
       console.log("Button clicked");
@@ -77,8 +82,10 @@ const ChatPage = () => {
         {userChatList.map((chat, index) => (
           userChatList.length !== 0 ? (
           <div className="left-names-holder" onClick={() => getChatMessages(chat.id)}>
-            <button onClick={() => getChatMessages(chat.id)}></button>
             <p>{chat.name}</p>
+            <p>
+              {chat.participants.join(", ")}
+            </p>
             <p className="last-message">{chat.lastMessage ? `${chat.lastMessage.name}: ${chat.lastMessage.message}` 
             : `No Message Yet`}</p>
             </div>
@@ -89,18 +96,24 @@ const ChatPage = () => {
       </div>
       <div id="right-box" style={{ width: IschatOpen ? "75%" : "0%"}}>
       <div id="recipient-name">
-          <p style={{ display: IschatOpen ? "block" : "none" }}>{username}</p>
+          <p style={{ display: IschatOpen ? "block" : "none" }}>{userChatList[currentChatId] ? userChatList[currentChatId].participants.join(", ") : null}</p>
         </div>
       <div id="chat-holder" >
         {all_messages.map((msg, index) => (
           all_messages != null ? (
           msg.name !== username ? (
-            <div key={`${msg.name}-${msg.message}-${index}`} className="other-person-message" style={{ width: "100%" }}>
+            <div key={`${msg.name}-${msg.message}-${index}`} className="other-person-message" style={{ width: "100%", gap: "10px" }}>
+              <div className="image-user">
+              <p>{msg.name}</p>
+              </div>
               <p className="other-user-message">{msg.message}</p>
             </div>
           ) : (
-            <div key={`${msg.name}-${msg.message}-${index}`} className="your-messages" style={{ width: "100%" }}>
+            <div key={`${msg.name}-${msg.message}-${index}`} className="your-messages" style={{ width: "100%", gap: "10px" }}>
               <p className="user-message">{msg.message}</p>
+              <div className="image-user">
+              <p>{msg.name}</p>
+              </div>
             </div>
           )
         ) : (

@@ -102,43 +102,58 @@ const getUserChats = (username) => {
 
       db.all(query, chatIds, (err, chats) => {
         if (err) return reject(err);
-        // resolve(chats);
 
-        // Get latest message of each chat
-        // Selects chat_id, name, message, timestamp of message table
-        // Joins together the values into latestMsg, with the highest timestamp to get the latest message
-        const lastMessageQuery = `SELECT m.chat_id, m.name, m.message, m.timestamp
-        FROM message m
-        INNER JOIN (
-          SELECT chat_id, MAX(timestamp) AS latest 
-          FROM message 
-          WHERE chat_id IN (${placeholders})
-          GROUP by chat_id
-        ) latestMsg
-         ON m.chat_id = latestMsg.chat_id AND m.timestamp = latestMsg.latest`;
+        // Query chat participants
+        const participantsQuery = `SELECT * FROM chat_participants WHERE chat_id IN (${placeholders})`;
+        db.all(participantsQuery, chatIds, (err, chatParticipants) => {
+          if (err) return reject(err);
 
-         db.all(lastMessageQuery, chatIds, (err, lastMessage) => {
-            if (err) reject(err);
+          // Organize participants by chat_id
+          const participantsByChat = {};
+          chatParticipants.forEach(participant => {
+            if (!participantsByChat[participant.chat_id]) {
+              participantsByChat[participant.chat_id] = [];
+            }
+            participantsByChat[participant.chat_id].push(participant.name);
+          });
+
+          // Get latest message of each chat
+          const lastMessageQuery = `SELECT m.chat_id, m.name, m.message, m.timestamp
+            FROM message m
+            INNER JOIN (
+              SELECT chat_id, MAX(timestamp) AS latest 
+              FROM message 
+              WHERE chat_id IN (${placeholders})
+              GROUP by chat_id
+            ) latestMsg
+            ON m.chat_id = latestMsg.chat_id AND m.timestamp = latestMsg.latest`;
+
+          db.all(lastMessageQuery, chatIds, (err, lastMessages) => {
+            if (err) return reject(err);
+
+            // Combine chat data with participants and latest messages
             const result = chats.map(chat => {
-              // Find the last message where the chat_id is equal to the message chat id
-              const lastMsg = lastMessage.find(msg => msg.chat_id === chat.id);
+              const participants = participantsByChat[chat.id] || [];
+              const lastMsg = lastMessages.find(msg => msg.chat_id === chat.id);
               return {
                 ...chat,
-                lastMessage: lastMsg
-                ? {
+                participants: participants,
+                lastMessage: lastMsg ? {
                   name: lastMsg.name,
                   message: lastMsg.message,
                   timestamp: lastMsg.timestamp
-              }
-              : null
-              }
-            })
+                } : null
+              };
+            });
+
             resolve(result);
-         })
+          });
+        });
       });
     });
   });
 };
+
 
 // Return a list of all partipents in each chat, mainly for testing
 const getAllParticipants = () => {
